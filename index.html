@@ -1,0 +1,735 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EagleEye — автоматический контроль сервиса ресторана</title>
+</head><body><style>
+  :root {
+    --paper: #FAF7F2;
+    --ink: #22303F;
+    --ink-soft: #5C6A79;
+    --line: #E4DDD2;
+    --card: #FFFFFF;
+    --ember: #B86A24;
+    --ember-soft: #F4E3CF;
+    --good: #2E7D4F;
+    --good-soft: #E1F0E7;
+    --wait: #8A6D1F;
+    --wait-soft: #F5EBCC;
+    --plan: #5C6A79;
+    --plan-soft: #E8E6E1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #1B2430; --ink: #EAE4DA; --ink-soft: #9AA6B2;
+      --line: #32404F; --card: #232F3D;
+      --ember: #E09A4E; --ember-soft: #3A2E1D;
+      --good: #6CC493; --good-soft: #1F3428;
+      --wait: #D9B958; --wait-soft: #37301A;
+      --plan: #9AA6B2; --plan-soft: #2B3644;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1B2430; --ink: #EAE4DA; --ink-soft: #9AA6B2;
+    --line: #32404F; --card: #232F3D;
+    --ember: #E09A4E; --ember-soft: #3A2E1D;
+    --good: #6CC493; --good-soft: #1F3428;
+    --wait: #D9B958; --wait-soft: #37301A;
+    --plan: #9AA6B2; --plan-soft: #2B3644;
+  }
+  :root[data-theme="light"] {
+    --paper: #FAF7F2; --ink: #22303F; --ink-soft: #5C6A79;
+    --line: #E4DDD2; --card: #FFFFFF;
+    --ember: #B86A24; --ember-soft: #F4E3CF;
+    --good: #2E7D4F; --good-soft: #E1F0E7;
+    --wait: #8A6D1F; --wait-soft: #F5EBCC;
+    --plan: #5C6A79; --plan-soft: #E8E6E1;
+  }
+
+  body {
+    background: var(--paper); color: var(--ink);
+    font: 16px/1.55 "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+    margin: 0; padding: 0 20px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { padding: 44px 0 10px; border-bottom: 2px solid var(--ink); }
+  .brand {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ember); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 5.4vw, 40px); line-height: 1.14;
+    margin: 0 0 10px; text-wrap: balance; font-weight: 700;
+  }
+  .lede { color: var(--ink-soft); margin: 0 0 26px; max-width: 58ch; }
+
+  .tally { display: flex; gap: 26px; padding: 16px 0 20px; flex-wrap: wrap; }
+  .report-table { width: 100%; border-collapse: collapse; margin: 10px 0 4px;
+    font-size: 13.5px; }
+  .report-table th, .report-table td {
+    border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .report-table th { background: var(--ember-soft); color: var(--ember);
+    font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+  .report-table td:nth-child(2) { font-variant-numeric: tabular-nums; text-align: center; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px; margin-top: 14px; }
+  .fact { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 13px 15px; }
+  .fact .t { font-weight: 600; display: block; margin-bottom: 3px; }
+  .fact .d { font-size: 13.5px; color: var(--ink-soft); }
+  .tally b {
+    display: block; font-family: Georgia, serif; font-size: 30px;
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .tally span { font-size: 13px; color: var(--ink-soft); }
+
+  h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 21px; margin: 40px 0 6px; text-wrap: balance;
+  }
+  .h2-note { font-size: 14px; color: var(--ink-soft); margin: 0 0 16px; }
+
+  .checks { display: flex; flex-direction: column; gap: 10px; }
+  .check {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 13px 16px; display: grid;
+    grid-template-columns: 1fr auto; gap: 2px 14px; align-items: baseline;
+  }
+  .check .name { font-weight: 600; }
+  .check .how { grid-column: 1 / -1; font-size: 14px; color: var(--ink-soft); }
+  .lim {
+    font-family: Consolas, "Courier New", monospace; font-size: 13px;
+    color: var(--ember); background: var(--ember-soft);
+    padding: 2px 9px; border-radius: 20px; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .status { font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+    padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+  .st-on   { color: var(--good); background: var(--good-soft); }
+  .st-wait { color: var(--wait); background: var(--wait-soft); }
+  .st-plan { color: var(--plan); background: var(--plan-soft); }
+
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 14px; }
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 14px; padding: 10px 0; }
+  .step + .step { border-top: 1px dashed var(--line); }
+  .step .dot {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--ember-soft);
+    color: var(--ember); display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-weight: 700;
+  }
+  .step p { margin: 2px 0 0; }
+  .step .t { font-weight: 600; }
+  .step .d { font-size: 14px; color: var(--ink-soft); }
+
+  .alert-sample {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--ember);
+    border-radius: 10px; padding: 14px 18px; margin: 18px 0 0;
+    font-size: 14.5px; overflow-x: auto;
+  }
+  .alert-sample p { margin: 3px 0; }
+  .alert-sample .from { color: var(--ink-soft); font-size: 12.5px; letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 8px; }
+
+  .privacy {
+    margin-top: 40px; padding: 16px 18px; border: 1px solid var(--line);
+    border-radius: 10px; background: var(--card); font-size: 14.5px;
+  }
+  .privacy b { font-family: Georgia, serif; }
+  footer { margin-top: 44px; font-size: 13px; color: var(--ink-soft);
+    border-top: 1px solid var(--line); padding-top: 14px; }
+
+  .price-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px; margin-top: 14px; }
+  .price-card { background: var(--card); border: 2px solid var(--ember);
+    border-radius: 12px; padding: 18px 20px; }
+  .price-card .t { font-weight: 600; font-size: 15px; }
+  .price-big { font-family: Georgia, serif; font-size: 27px; margin: 8px 0;
+    color: var(--ember); line-height: 1.2; }
+  .price-big small { font-size: 14px; font-weight: 400; color: var(--ink-soft); }
+  .price-card .d { font-size: 13.5px; color: var(--ink-soft); }
+
+  /* --- pricing calculator --- */
+  .calc-table td:first-child, .calc-table th:first-child {
+    width: 30px; text-align: center; padding-left: 6px; padding-right: 6px;
+  }
+  .calc-table td:nth-child(2) { font-variant-numeric: normal; text-align: left; }
+  .calc-table .price-cell { font-variant-numeric: tabular-nums; text-align: center; white-space: nowrap; }
+  .calc-table input[type=checkbox], .calc-summary input[type=checkbox] {
+    width: 17px; height: 17px; accent-color: var(--ember); cursor: pointer; margin: 0;
+  }
+  .calc-table tr.pack-row td:first-child { vertical-align: middle; }
+  .calc-table input[type=number] {
+    width: 46px; padding: 3px 4px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--paper); color: var(--ink); font: inherit; font-size: 13.5px;
+    text-align: center;
+  }
+
+  .calc-summary {
+    position: sticky; top: 12px; z-index: 5; background: var(--card);
+    border: 2px solid var(--ember); border-radius: 12px; padding: 20px 24px;
+    margin: 22px 0 26px; text-align: center;
+  }
+  .calc-label { font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ember); font-weight: 600; }
+  .calc-num { font-family: Georgia, serif; font-size: 24px; margin: 4px 0 0;
+    font-variant-numeric: tabular-nums; }
+  .calc-num small { font-size: 14px; font-weight: 400; color: var(--ink-soft); }
+  .calc-num--sub { font-size: 17px; color: var(--ink-soft); margin-top: 2px; }
+  .calc-note { font-size: 12.5px; color: var(--ink-soft); margin: 14px 0 0;
+    max-width: 46ch; margin-left: auto; margin-right: auto; }
+  .calc-reset { font-size: 12.5px; color: var(--ember); background: none; border: none;
+    padding: 0; cursor: pointer; text-decoration: underline; font-family: inherit; }
+
+  /* --- pricing sub-tabs (inside the "Тарифы" category) --- */
+  .tabs { display: flex; gap: 2px; margin: 22px 0 0; border-bottom: 2px solid var(--line);
+    flex-wrap: wrap; }
+  .tab-btn { background: none; border: none; padding: 10px 15px; font: inherit;
+    font-size: 13.5px; color: var(--ink-soft); cursor: pointer; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; white-space: nowrap; }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--ember); border-bottom-color: var(--ember); font-weight: 600; }
+  .tab-panel { display: none; padding-top: 20px; }
+  .tab-panel.active { display: block; }
+  .plan-card .incl { font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 12px; }
+  .plan-card .incl li { margin: 2px 0; }
+  .h3-sub { font-family: Georgia, "Times New Roman", serif; font-size: 16.5px;
+    margin: 22px 0 10px; }
+  .h3-sub:first-child { margin-top: 0; }
+
+  /* --- top-level category tabs (whole-page sections) --- */
+  .cat-tabs { display: flex; gap: 6px; margin: 30px 0 0; flex-wrap: wrap; }
+  .cat-tab-btn {
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 18px; font: inherit; font-size: 14px; color: var(--ink-soft);
+    cursor: pointer; white-space: nowrap;
+  }
+  .cat-tab-btn:hover { border-color: var(--ember); color: var(--ink); }
+  .cat-tab-btn.active { background: var(--ember); border-color: var(--ember); color: #FFF; font-weight: 600; }
+  .cat-tab-panel { display: none; }
+  .cat-tab-panel.active { display: block; }
+  .cat-tab-panel > h2:first-child { margin-top: 30px; }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="brand">EagleEye · система контроля сервиса</p>
+  <h1>Что ваши камеры могут контролировать сами</h1>
+  <p class="lede">Система смотрит на существующие камеры ресторана или кафе,
+  замечает нарушения стандартов сервиса и мгновенно присылает менеджеру фото
+  в Telegram. Ниже — полный список автоматических проверок.</p>
+  <div class="tally">
+    <div><b>14</b><span>проверок</span></div>
+    <div><b>24/7</b><span>без выходных</span></div>
+    <div><b>≈1 мин</b><span>от нарушения до алерта</span></div>
+  </div>
+  <p style="font-size:13px;margin:14px 0 0;color:var(--ink-soft)">
+    ⚡ Уже работает вживую в кафе <strong>CAF</strong> (Душанбе) — ниже примеры
+    из реальной работы системы.</p>
+</header>
+
+<div class="cat-tabs" role="tablist">
+  <button type="button" class="cat-tab-btn active" data-cat="cat-checks">Проверки</button>
+  <button type="button" class="cat-tab-btn" data-cat="cat-how">Как это работает</button>
+  <button type="button" class="cat-tab-btn" data-cat="cat-reports">Отчёты</button>
+  <button type="button" class="cat-tab-btn" data-cat="cat-reliability">Надёжность и настройка</button>
+  <button type="button" class="cat-tab-btn" data-cat="cat-pricing">Тарифы</button>
+</div>
+
+<div class="cat-tab-panel active" id="cat-checks">
+
+<h2>Проверки в зале — в реальном времени</h2>
+<p class="h2-note">Пороги ниже — из реального пилота; под ваше заведение они настраиваются в панели без программиста.</p>
+<div class="checks">
+  <div class="check"><span class="name">Меню не подано после посадки гостей</span><span class="lim">2 мин</span>
+    <span class="how">Гости сели — официант или админ должен подойти. Не подошёл — алерт с фото стола.</span></div>
+  <div class="check"><span class="name">Стол без внимания официанта</span><span class="lim">каждые 10 мин</span>
+    <span class="how">К занятому столу должны регулярно подходить: подача, уборка посуды, дозаказ.</span></div>
+  <div class="check"><span class="name">Стол не убран после ухода гостей</span><span class="lim">6 мин</span>
+    <span class="how">Гости ушли — таймер пошёл. Если на столе видны бутылки, стаканы или тарелки — алерт может прийти раньше, не дожидаясь таймера.</span></div>
+  <div class="check"><span class="name">Гостей посадили за неубранный стол</span><span class="lim">сразу</span>
+    <span class="how">Новые гости сели за стол, который не убрали после предыдущих.</span></div>
+  <div class="check"><span class="name">Сотрудник простаивает</span><span class="lim">5 мин</span>
+    <span class="how">Стоит на месте вне служебных зон, пока в зале есть гости.</span></div>
+  <div class="check"><span class="name">Телефон в рабочее время</span><span class="lim">60 сек</span>
+    <span class="how">Умный фильтр: приём заказа у стола гостей и работа на кассе тревогу не вызывают. Алерт — только когда сотрудник с телефоном сам по себе.</span></div>
+  <div class="check"><span class="name">Официант «завис» у стола гостей</span><span class="lim">9 мин</span>
+    <span class="how">По стандарту у стола находятся не дольше 3–5 минут за раз.</span></div>
+  <div class="check"><span class="name">В зале нет ни одного сотрудника</span><span class="lim">3 мин</span>
+    <span class="how">Проверка сразу по всем камерам зала: минимум один сотрудник всегда на месте.</span></div>
+</div>
+
+<h2>Включаются после разметки зон на камерах</h2>
+<p class="h2-note">Код готов — осталось обвести кассу и вход на кадрах камер (10 минут работы).</p>
+<div class="checks">
+  <div class="check"><span class="name">Гостя не встретили у входа</span><span class="lim">60 сек</span>
+    <span class="how">Гость зашёл — сотрудник должен подойти сразу, а не дать ему самому искать себе стол.</span></div>
+  <div class="check"><span class="name">Касса без присмотра</span><span class="lim">1 мин</span>
+    <span class="how">В рабочие часы зона кассы не должна пустовать дольше минуты.</span></div>
+  <div class="check"><span class="name">Сотрудник в запретной зоне</span><span class="lim">сразу</span>
+    <span class="how">Зоны, куда персоналу в форме входить нельзя (склад, служебные помещения) — настраивается под заведение.</span></div>
+  <div class="check"><span class="name">Утренняя проверка зала</span><span class="lim">до открытия</span>
+    <span class="how">Автоматически: стулья и диваны на местах по эталону, плазмы включены. Плюс фото-чек-лист для админа: входная группа, менажницы, фасад — фото прямо боту в Telegram, пропустил — алерт владельцу.</span></div>
+</div>
+
+<h2>Готовятся</h2>
+<div class="checks">
+  <div class="check"><span class="name">Сотрудник ест или пьёт в зале</span><span class="lim">20 сек</span>
+    <span class="how">Напиток у лица стоящего сотрудника в гостевой зоне. Включим после проверки точности на живых камерах.</span><span class="status st-wait">тестируется</span></div>
+  <div class="check"><span class="name">Блюдо стоит на раздаче кухни</span><span class="lim">1 мин</span>
+    <span class="how">Готовое блюдо на раздаче должно уходить к столу сразу, а не остывать. Включим после проверки точности на живых камерах.</span><span class="status st-wait">тестируется</span></div>
+</div>
+
+</div>
+
+<div class="cat-tab-panel" id="cat-how">
+
+<h2>Как это выглядит для менеджера</h2>
+<div class="flow">
+  <div class="step"><div class="dot">1</div><div>
+    <p class="t">Мгновенный алерт в Telegram</p>
+    <p class="d">Фото с камеры, где отмечен нарушитель, плюс описание и пункт чек-листа.</p></div></div>
+  <div class="step"><div class="dot">2</div><div>
+    <p class="t">Кнопки «Подтверждаю» / «Ложная тревога»</p>
+    <p class="d">Один клик — и система учится. Ложные срабатывания не попадают в отчёты.</p></div></div>
+  <div class="step"><div class="dot">3</div><div>
+    <p class="t">Вечером — отчёт PDF</p>
+    <p class="d">Кто сколько нарушил, лучший и худший сотрудник, сравнение со вчера. Приходит в Telegram в 23:00. При необходимости — та же картина в Excel, с графиками за неделю.</p></div></div>
+  <div class="step"><div class="dot">4</div><div>
+    <p class="t">Панель управления</p>
+    <p class="d">Лента нарушений, статистика по сотрудникам и столам, настройка порогов — всё на русском.</p></div></div>
+</div>
+
+<div class="alert-sample">
+  <p class="from">Реальный алерт из пилота в CAF · Telegram</p>
+  <p>📬 Сообщение для пользователя</p>
+  <p>Объект: CAF</p>
+  <p>Камера: Касса 📷</p>
+  <p>Описание: Сотрудник №4 пользуется мобильным телефоном при гостях (Касса) ❗</p>
+  <p>Чек-лист: Запрещено использование моб. телефонов для личных целей (разговоры, игры, просмотр видео) ⚠️</p>
+  <p>Время: 10:14 🕐 &nbsp;·&nbsp; Длительность: 4 сек</p>
+</div>
+
+</div>
+
+<div class="cat-tab-panel" id="cat-reports">
+
+<h2>Вечерний отчёт: кто, сколько и что нарушил</h2>
+<p class="h2-note">PDF приходит в Telegram каждый день в 23:00 — владелец видит картину дня, не заходя в ресторан.</p>
+<div class="alert-sample">
+  <p class="from">Фрагмент отчёта · нарушения по сотрудникам</p>
+  <table class="report-table">
+    <tr><th>Сотрудник</th><th>Кол-во</th><th>Какие нарушения</th></tr>
+    <tr><td>Анвар</td><td>3</td><td>Телефон в рабочее время ×2, Меню не подано ×1</td></tr>
+    <tr><td>Далер</td><td>1</td><td>Долго у стола гостей ×1</td></tr>
+    <tr><td>Без имени</td><td>1</td><td>Телефон в рабочее время ×1</td></tr>
+  </table>
+</div>
+<div class="facts">
+  <div class="fact"><span class="t">Худший и лучший сотрудник дня</span>
+    <span class="d">Готовый повод для разговора на планёрке — по фактам, а не по ощущениям.</span></div>
+  <div class="fact"><span class="t">Пиковые часы нарушений</span>
+    <span class="d">Видно, в какие часы залу не хватает рук — аргумент для расстановки смен.</span></div>
+  <div class="fact"><span class="t">Динамика к вчерашнему дню</span>
+    <span class="d">Стало лучше или хуже — одной строкой.</span></div>
+  <div class="fact"><span class="t">Статистика по столам</span>
+    <span class="d">Какие столы систематически ждут дольше всех.</span></div>
+  <div class="fact"><span class="t">Дисциплина проверок</span>
+    <span class="d">Пройдена ли утренняя проверка, сколько алертов менеджер не разобрал.</span></div>
+  <div class="fact"><span class="t">Честные цифры</span>
+    <span class="d">Ложные срабатывания, отмеченные менеджером, в статистику не попадают.</span></div>
+  <div class="fact"><span class="t">Экспорт в Excel</span>
+    <span class="d">Та же статистика — таблицей, которую можно самостоятельно сортировать и фильтровать, без PDF.</span></div>
+  <div class="fact"><span class="t">Фото нарушения — прямо из отчёта</span>
+    <span class="d">В Excel-версии клик по строке хронологии открывает снимок с камеры, без поиска в переписке.</span></div>
+</div>
+
+<h2>Недельный отчёт по сотрудникам — с графиками</h2>
+<p class="h2-note">Отдельная Excel-книга на неделю: кто нарушает больше всех и меняется ли картина день ото дня — готовый материал для планёрки.</p>
+<div class="facts">
+  <div class="fact"><span class="t">Кто нарушает больше всех</span>
+    <span class="d">Столбчатая диаграмма по сотрудникам, от худшего к лучшему — конкретный повод для разговора, а не общие слова.</span></div>
+  <div class="fact"><span class="t">Тренд по дням недели</span>
+    <span class="d">Линия нарушений по дням — видно, стала ли неделя лучше или хуже, а не только сегодняшний день.</span></div>
+  <div class="fact"><span class="t">Формируется по клику</span>
+    <span class="d">Выбрали неделю в панели управления — получили Excel с графиками, таблицами по сотрудникам и полной хронологией.</span></div>
+</div>
+
+</div>
+
+<div class="cat-tab-panel" id="cat-reliability">
+
+<h2>Система собирает обратную связь для настройки</h2>
+<p class="h2-note">Каждый клик менеджера сохраняется и помогает точнее настроить систему под ваш зал.</p>
+<div class="facts">
+  <div class="fact"><span class="t">«Подтверждаю / Ложная тревога»</span>
+    <span class="d">Прямо под каждым алертом в Telegram. Ложные исчезают из отчётов и копятся как материал для настройки.</span></div>
+  <div class="fact"><span class="t">Имена вместо номеров, без переклика каждый день</span>
+    <span class="d">Менеджер один раз закрепляет сотрудника за камерой (посменно или постоянно) — дальше система сама узнаёт его каждый день, и алерты сразу говорят «Анвар», а не «№7».</span></div>
+  <div class="fact"><span class="t">Пороги под ваши стандарты</span>
+    <span class="d">«Меню за 2 минуты», «уборка за 6» — все цифры меняются в настройках без программиста.</span></div>
+  <div class="fact"><span class="t">Расписание для каждой проверки отдельно</span>
+    <span class="d">Любую проверку можно включить только на рабочие часы или выключить полностью — прямо в панели, без программиста.</span></div>
+</div>
+
+<h2>Внедрение и надёжность</h2>
+<div class="facts">
+  <div class="fact"><span class="t">Ваши камеры — без замены</span>
+    <span class="d">Подключается к существующему видеонаблюдению (Hikvision, Dahua и др.). Новое оборудование — один компьютер.</span></div>
+  <div class="fact"><span class="t">Видео не покидает ресторан</span>
+    <span class="d">Вся обработка — на месте. В интернет уходят только алерты и отчёты.</span></div>
+  <div class="fact"><span class="t">Работает при обрывах связи</span>
+    <span class="d">Интернет пропал — алерты копятся и доходят, как только связь вернулась. Камера отвалилась — переподключение автоматически.</span></div>
+  <div class="fact"><span class="t">Запуск за один день</span>
+    <span class="d">Разметить зоны на кадрах камер — около часа. Панель, алерты и отчёты — полностью на русском.</span></div>
+  <div class="fact"><span class="t">Всё управление — из панели</span>
+    <span class="d">Залы и камеры, зоны, пороги, имена сотрудников — админ настраивает сам, без программиста.</span></div>
+  <div class="fact"><span class="t">Один алерт на нарушение, не спам</span>
+    <span class="d">Если проблему не решили, менеджер узнает — но не получает напоминание каждые 10 минут об одном и том же.</span></div>
+</div>
+
+</div>
+
+<div class="cat-tab-panel" id="cat-pricing">
+
+<h2>Тарифы</h2>
+<p class="h2-note">Разовая покупка — за платформу и за каждую проверку отдельно. Подписка — свой,
+более простой расчёт: взнос + по 500 сомони/мес за каждый выбранный порог. Цены в сомони,
+в скобках — ориентировочно в долларах (курс 9.2 сомони/$, для расчёта; уточняется на момент договора).</p>
+
+<div class="price-cards">
+  <div class="price-card">
+    <span class="t">Разовая покупка</span>
+    <div class="price-big">120 000 сомони <small>(≈$13 040)</small></div>
+    <span class="d">Бессрочная лицензия, весь комплект — платформа + все 14 проверок. Работает даже без продления обслуживания. Меньше проверок — дешевле, см. вкладку «По проверкам».</span>
+  </div>
+  <div class="price-card">
+    <span class="t">Подписка</span>
+    <div class="price-big">60 000 сомони <small>взнос (≈$6 520)</small><br>+ от 500 <small>сомони/мес (≈$54)</small></div>
+    <span class="d">Взнос — установка и разметка зон, оплачивается полностью. Дальше — по 500 сомони/мес за каждый выбранный порог (пакет — дешевле поштучного). Минимум 6 месяцев.</span>
+  </div>
+</div>
+
+<div class="calc-summary" id="calcSummary">
+  <span class="calc-label">Ваша подписка</span>
+  <div class="calc-num">60 000 сомони <small>(≈$6 520)</small> взнос</div>
+  <div class="calc-num calc-num--sub">+ <span id="calcMonthlyVal">—</span>/мес</div>
+  <p class="calc-note">Отметьте нужные проверки и пакет во вкладках ниже — месячная сумма
+  пересчитается сама. Взнос фиксирован, 500 сомони/мес за каждый порог (пакет — дешевле
+  поштучного). &nbsp;<button type="button" class="calc-reset" id="calcReset">Сбросить выбор</button></p>
+</div>
+
+<div class="tabs" role="tablist">
+  <button type="button" class="tab-btn active" data-tab="tab-plans">Готовые планы</button>
+  <button type="button" class="tab-btn" data-tab="tab-platform">Платформа</button>
+  <button type="button" class="tab-btn" data-tab="tab-checks">По проверкам</button>
+  <button type="button" class="tab-btn" data-tab="tab-packs">Пакеты</button>
+  <button type="button" class="tab-btn" data-tab="tab-modules">Модули и камеры</button>
+  <button type="button" class="tab-btn" data-tab="tab-faq">FAQ и условия</button>
+</div>
+
+<div class="tab-panel active" id="tab-plans">
+  <p class="h2-note">Три готовых ориентира — если не хочется собирать набор вручную.
+  Свой набор проверок — во вкладке «По проверкам».</p>
+  <div class="price-cards">
+    <div class="price-card plan-card">
+      <span class="t">Старт</span>
+      <ul class="incl">
+        <li>Платформа (до 4 камер)</li>
+        <li>4 проверки в реальном времени: меню, уборка стола, телефон, персонал в зале</li>
+      </ul>
+      <div class="price-big">71 100 сомони <small>(≈$7 730)</small></div>
+      <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 2 000 сомони/мес (≈$217)</span>
+    </div>
+    <div class="price-card plan-card">
+      <span class="t">Стандарт</span>
+      <ul class="incl">
+        <li>Платформа (до 4 камер)</li>
+        <li>Пакет из 8 проверок в реальном времени</li>
+      </ul>
+      <div class="price-big">89 500 сомони <small>(≈$9 730)</small></div>
+      <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 3 500 сомони/мес (≈$380)</span>
+    </div>
+    <div class="price-card plan-card">
+      <span class="t">Про</span>
+      <ul class="incl">
+        <li>Платформа (до 4 камер)</li>
+        <li>Полный пакет — все 14 проверок</li>
+        <li>Продвинутая аналитика (Excel, недельные отчёты)</li>
+      </ul>
+      <div class="price-big">130 600 сомони <small>(≈$14 200)</small></div>
+      <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 6 800 сомони/мес (≈$739)</span>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-platform">
+  <p class="h2-note">Не проверка, а основа: подключение камер, панель управления, Telegram-алерты, ежедневный отчёт.</p>
+  <table class="report-table">
+    <tr><th>Платформа (до 4 камер/залов)</th><th>Разово</th><th>В месяц</th></tr>
+    <tr><td>Установка + бессрочная база</td><td>47 500 сомони <small>(≈$5 160)</small></td><td>—</td></tr>
+    <tr><td>Установка + база (подписка)</td><td>60 000 сомони <small>взнос (≈$6 520)</small></td><td>— <small>(включено во взнос)</small></td></tr>
+  </table>
+  <p class="h2-note" style="margin-top:10px">При подписке взнос заменяет и установку, и ежемесячную плату
+  за саму платформу — дальше в месяц вы платите только за выбранные проверки (500 сомони/мес за каждую, вкладка «По проверкам»).</p>
+</div>
+
+<div class="tab-panel" id="tab-checks">
+  <p class="h2-note">Берёте только нужные — цена не зависит от того, что выбрали другие.<br>
+  Разовая покупка = <b>платформа</b> (вкладка «Платформа») + <b>цена каждой выбранной проверки</b>.<br>
+  Подписка = <b>взнос 60 000</b> + <b>500 сомони/мес</b> за каждую выбранную проверку.</p>
+  <div class="alert-sample">
+    <p class="from">Пример расчёта · 3 проверки в реальном времени</p>
+    <p><b>Разово:</b> платформа 47 500 с. + 3 × 5 900 с. = <b>65 200 сомони (≈$7 090)</b></p>
+    <p><b>Подписка:</b> взнос 60 000 с. + 3 × 500 с./мес = взнос 60 000 с. + <b>1 500 сомони/мес (≈$163)</b></p>
+    <p style="margin-top:8px">Нужны все 8 проверок в реальном времени — дешевле взять пакетом (вкладка «Пакеты»), чем поштучно.</p>
+  </div>
+  <table class="report-table calc-table">
+    <tr><th></th><th>Проверка</th><th>Разово</th><th>Подписка, /мес</th></tr>
+    <tr><td colspan="4" style="background:var(--paper);font-weight:600">В реальном времени</td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt1"></td><td><label for="chk-rt1">Меню не подано после посадки гостей</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt2"></td><td><label for="chk-rt2">Стол без внимания официанта</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt3"></td><td><label for="chk-rt3">Стол не убран после ухода гостей</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt4"></td><td><label for="chk-rt4">Гостей посадили за неубранный стол</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt5"></td><td><label for="chk-rt5">Сотрудник простаивает</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt6"></td><td><label for="chk-rt6">Телефон в рабочее время</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt7"></td><td><label for="chk-rt7">Официант «завис» у стола гостей</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt8"></td><td><label for="chk-rt8">В зале нет ни одного сотрудника</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td colspan="4" style="background:var(--paper);font-weight:600">С разметкой зон</td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z1"></td><td><label for="chk-z1">Гостя не встретили у входа</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z2"></td><td><label for="chk-z2">Касса без присмотра</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z3"></td><td><label for="chk-z3">Сотрудник в запретной зоне</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z4"></td><td><label for="chk-z4">Утренняя проверка зала</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td colspan="4" style="background:var(--paper);font-weight:600">Экспериментальные (после проверки точности на ваших камерах)</td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e1"></td><td><label for="chk-e1">Сотрудник ест или пьёт в зале</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e2"></td><td><label for="chk-e2">Блюдо стоит на раздаче кухни</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+  </table>
+</div>
+
+<div class="tab-panel" id="tab-packs">
+  <p class="h2-note">Отметьте пакет — входящие в него проверки отметятся сами и
+  их цена больше не суммируется отдельно. Пакеты взаимоисключающие.</p>
+  <table class="report-table calc-table">
+    <tr><th></th><th>Пакет</th><th>Что входит</th><th>Разово</th><th>Подписка, /мес</th></tr>
+    <tr class="pack-row"><td><input type="checkbox" id="chk-pack8" data-onetime="42000" data-monthly="3500"></td><td><label for="chk-pack8">8 проверок в реальном времени</label></td><td>Весь список «в реальном времени» из вкладки «По проверкам»</td>
+        <td class="price-cell">42 000 с. <small>(≈$4 570, вместо 47 200 с. поштучно)</small></td>
+        <td class="price-cell">3 500 с. <small>(≈$380, вместо 4 000 с./мес поштучно)</small></td></tr>
+    <tr class="pack-row"><td><input type="checkbox" id="chk-packfull" data-onetime="72500" data-monthly="6000"></td><td><label for="chk-packfull">Полный пакет — все 14 проверок</label></td><td>Все проверки из вкладки «По проверкам»</td>
+        <td class="price-cell">72 500 с. <small>(≈$7 880, вместо 85 600 с. поштучно)</small></td>
+        <td class="price-cell">6 000 с. <small>(≈$652, вместо 7 000 с./мес поштучно)</small></td></tr>
+  </table>
+</div>
+
+<div class="tab-panel" id="tab-modules">
+  <table class="report-table calc-table">
+    <tr><th></th><th>Модуль</th><th>Что входит</th><th>Разово</th><th>Подписка, /мес</th></tr>
+    <tr><td><input type="checkbox" class="calc-module" data-onetime="10600" data-monthly="800" id="chk-m1"></td><td><label for="chk-m1">Продвинутая аналитика</label></td>
+        <td>Excel-отчёты, недельная сводка с графиками, фото нарушения прямо из отчёта</td>
+        <td class="price-cell">10 600 с. <small>(≈$1 150)</small></td><td class="price-cell">800 с. <small>(≈$87)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-module" data-onetime="5900" data-monthly="500" id="chk-m2"></td><td><label for="chk-m2">Расписание проверок</label></td>
+        <td>Включение/выключение и рабочие часы для каждой проверки отдельно</td>
+        <td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td></td><td>Обслуживание при разовой покупке</td>
+        <td>Обновления и поддержка (для подписки уже включено во взнос и месячную цену)</td>
+        <td class="price-cell">—</td><td class="price-cell">1 400 с./мес <small>(≈$152)</small></td></tr>
+  </table>
+  <table class="report-table">
+    <tr><th>Камеры сверх включённых в платформу</th><th>Цена за 1 камеру</th></tr>
+    <tr><td>Каждая дополнительная камера/зал</td>
+        <td class="price-cell">4 000 с. <small>(≈$430)</small> разово</td></tr>
+  </table>
+  <p class="h2-note" style="margin-top:10px">Платформа включает до 4 камер/залов (см. вкладку «Платформа»).
+  Каждая камера сверх этого — разовая доплата, без ежемесячной наценки, для обеих схем оплаты.</p>
+</div>
+
+<div class="tab-panel" id="tab-faq">
+  <h3 class="h3-sub">Оплата — разовая покупка</h3>
+  <div class="facts">
+    <div class="fact"><span class="t">Как проходит оплата?</span>
+      <span class="d">Наличными, двумя платежами: 50% до начала работ, 50% после установки и запуска.</span></div>
+    <div class="fact"><span class="t">Возврат</span>
+      <span class="d">Не предусмотрен.</span></div>
+    <div class="fact"><span class="t">Можно добавить проверки или модули позже?</span>
+      <span class="d">Да, в любой момент — доплата только за разницу, без пересмотра всего договора.</span></div>
+  </div>
+  <h3 class="h3-sub">Оплата — подписка</h3>
+  <div class="facts">
+    <div class="fact"><span class="t">Взнос</span>
+      <span class="d">60 000 сомони, оплачивается полностью, наличными, без разбивки на этапы.</span></div>
+    <div class="fact"><span class="t">Минимальный срок</span>
+      <span class="d">6 месяцев с момента установки.</span></div>
+    <div class="fact"><span class="t">Отказ от подписки</span>
+      <span class="d">Нужно уведомить не менее чем за 2 недели.</span></div>
+    <div class="fact"><span class="t">Что при остановке платежей</span>
+      <span class="d">После льготного периода система прекращает обработку камер до возобновления оплаты — настройки и история сохраняются, не удаляются.</span></div>
+  </div>
+  <h3 class="h3-sub">Общее</h3>
+  <div class="facts">
+    <div class="fact"><span class="t">Что если камеры не подходят технически?</span>
+      <span class="d">Совместимость с конкретными моделями камер уточняется перед подписанием договора.</span></div>
+    <div class="fact"><span class="t">Нужно ли новое оборудование?</span>
+      <span class="d">Камеры — существующие, без замены. Новое — один компьютер для обработки видео.</span></div>
+    <div class="fact"><span class="t">Разовая покупка vs подписка</span>
+      <span class="d">Разовая покупка — бессрочная лицензия, работает без продления обслуживания. Подписка привязана к активной оплате на весь срок использования.</span></div>
+    <div class="fact"><span class="t">Договор</span>
+      <span class="d">Цены на этой странице — отправная точка для обсуждения, финальные условия фиксируются договором.</span></div>
+  </div>
+</div>
+
+</div>
+
+<div class="privacy">
+  <b>Приватность.</b> Система не распознаёт лица. Гости на снимках
+  автоматически размываются. Всё видео обрабатывается на компьютере внутри
+  ресторана и никуда не передаётся — наружу уходят только алерты и отчёты.
+</div>
+
+<footer>EagleEye · работает вживую в CAF (Душанбе) · все пороги настраиваются под стандарты вашего заведения</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // Live pricing calculator for the subscription monthly total only (the
+  // one-time price is the fixed 120 000 headline card, not computed here
+  // -- see the render() comment below for why). Pure arithmetic in the
+  // browser -- no network calls, no data collection. Rounding matches the
+  // convention used for every other static price on this page: nearest $1.
+  var RATE = 9.2;
+
+  var pack8 = document.getElementById('chk-pack8');
+  var packFull = document.getElementById('chk-packfull');
+  if (!pack8 || !packFull) return; // defensive: don't break the page if markup changes
+
+  var checkBoxes = Array.prototype.slice.call(document.querySelectorAll('.calc-check'));
+  var moduleBoxes = Array.prototype.slice.call(document.querySelectorAll('.calc-module'));
+  var realtimeBoxes = checkBoxes.filter(function (cb) { return cb.hasAttribute('data-realtime'); });
+
+  var monthlyEl = document.getElementById('calcMonthlyVal');
+  var resetBtn = document.getElementById('calcReset');
+
+  // Which check ids the active package auto-checked last render -- so
+  // switching packages (or turning one off) cleanly un-checks whatever
+  // it had force-checked, instead of leaving stray checkmarks behind.
+  var prevCovered = {};
+
+  function fmt(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+  function roundUsd(somoni, step) {
+    return Math.round(somoni / RATE / step) * step;
+  }
+  function money(somoni, step) {
+    return fmt(somoni) + ' сомони <small>(≈$' + fmt(roundUsd(somoni, step)) + ')</small>';
+  }
+
+  function syncPackageCoverage() {
+    var covered = {};
+    if (packFull.checked) {
+      checkBoxes.forEach(function (cb) { covered[cb.id] = true; });
+    } else if (pack8.checked) {
+      realtimeBoxes.forEach(function (cb) { covered[cb.id] = true; });
+    }
+    checkBoxes.forEach(function (cb) {
+      if (covered[cb.id]) {
+        cb.checked = true;
+        cb.disabled = true;
+      } else {
+        cb.disabled = false;
+        if (prevCovered[cb.id]) cb.checked = false;
+      }
+    });
+    prevCovered = covered;
+  }
+
+  function render() {
+    syncPackageCoverage();
+
+    // Subscription monthly total only -- the calculator no longer tracks a
+    // one-time total (that's the fixed 120 000 headline card above it now;
+    // a second, differently-computed "разовая покупка" number here read as
+    // a mismatch rather than a live breakdown). The 60 000 signup fee
+    // (static text in the markup) already covers the platform itself, so
+    // this is purely the sum of chosen checks/packages/modules at their
+    // subscription rate (flat 500/mo per check). "Обслуживание при разовой
+    // покупке" is one-time-only and has no subscription price, so it's
+    // plain text in its table row now, not a checkbox feeding this total.
+    var monthly = 0;
+
+    // Package price replaces the sum of the items it covers -- covered
+    // checkboxes are skipped below (disabled = true), so this is the only
+    // place their cost enters the total. Packages are mutually exclusive
+    // (enforced in the change handlers), so at most one of these runs.
+    if (packFull.checked) {
+      monthly += Number(packFull.dataset.monthly);
+    } else if (pack8.checked) {
+      monthly += Number(pack8.dataset.monthly);
+    }
+
+    checkBoxes.forEach(function (cb) {
+      if (!cb.disabled && cb.checked) monthly += Number(cb.dataset.monthly);
+    });
+
+    moduleBoxes.forEach(function (cb) {
+      if (cb.checked) monthly += Number(cb.dataset.monthly);
+    });
+
+    monthlyEl.innerHTML = money(monthly, 1);
+  }
+
+  function onPack8Change() {
+    if (pack8.checked) packFull.checked = false;
+    render();
+  }
+  function onPackFullChange() {
+    if (packFull.checked) pack8.checked = false;
+    render();
+  }
+  pack8.addEventListener('change', onPack8Change);
+  packFull.addEventListener('change', onPackFullChange);
+  checkBoxes.concat(moduleBoxes).forEach(function (cb) {
+    cb.addEventListener('change', render);
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function () {
+      checkBoxes.concat(moduleBoxes).concat([pack8, packFull]).forEach(function (cb) {
+        cb.checked = false;
+        cb.disabled = false;
+      });
+      prevCovered = {};
+      render();
+    });
+  }
+
+  render();
+
+  // Pricing sub-tabs (inside "Тарифы") -- pure show/hide, no routing.
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  var tabPanels = Array.prototype.slice.call(document.querySelectorAll('.tab-panel'));
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabBtns.forEach(function (b) { b.classList.remove('active'); });
+      tabPanels.forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var panel = document.getElementById(btn.dataset.tab);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  // Top-level category tabs -- independent of the pricing sub-tabs above,
+  // different class names so the two switchers never interfere.
+  var catBtns = Array.prototype.slice.call(document.querySelectorAll('.cat-tab-btn'));
+  var catPanels = Array.prototype.slice.call(document.querySelectorAll('.cat-tab-panel'));
+  catBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      catBtns.forEach(function (b) { b.classList.remove('active'); });
+      catPanels.forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var panel = document.getElementById(btn.dataset.cat);
+      if (panel) panel.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body></html>
