@@ -64,6 +64,7 @@
   .lede { color: var(--ink-soft); margin: 0 0 26px; max-width: 58ch; }
 
   .tally { display: flex; gap: 26px; padding: 16px 0 20px; flex-wrap: wrap; }
+  .table-scroll { overflow-x: auto; }
   .report-table { width: 100%; border-collapse: collapse; margin: 10px 0 4px;
     font-size: 13.5px; }
   .report-table th, .report-table td {
@@ -320,12 +321,14 @@
 <p class="h2-note">PDF приходит в Telegram каждый день в 23:00 — владелец видит картину дня, не заходя в ресторан.</p>
 <div class="alert-sample">
   <p class="from">Фрагмент отчёта · нарушения по сотрудникам</p>
+  <div class="table-scroll">
   <table class="report-table">
     <tr><th>Сотрудник</th><th>Кол-во</th><th>Какие нарушения</th></tr>
     <tr><td>Анвар</td><td>3</td><td>Телефон в рабочее время ×2, Меню не подано ×1</td></tr>
     <tr><td>Далер</td><td>1</td><td>Долго у стола гостей ×1</td></tr>
     <tr><td>Без имени</td><td>1</td><td>Телефон в рабочее время ×1</td></tr>
   </table>
+  </div>
 </div>
 <div class="facts">
   <div class="fact"><span class="t">Худший и лучший сотрудник дня</span>
@@ -478,11 +481,13 @@
 
 <div class="tab-panel" id="tab-platform">
   <p class="h2-note">Не проверка, а основа: подключение камер, панель управления, Telegram-алерты, ежедневный отчёт.</p>
+  <div class="table-scroll">
   <table class="report-table">
     <tr><th>Платформа (до 4 камер/залов)</th><th>Разово</th><th>В месяц</th></tr>
     <tr><td>Установка + бессрочная база</td><td>74 100 сомони <small>(≈$8 050)</small></td><td>—</td></tr>
     <tr><td>Установка + база (подписка)</td><td>60 000 сомони <small>взнос (≈$6 520)</small></td><td>— <small>(включено во взнос)</small></td></tr>
   </table>
+  </div>
   <p class="h2-note" style="margin-top:10px">При подписке взнос заменяет и установку, и ежемесячную плату
   за саму платформу — дальше в месяц вы платите только за выбранные проверки (500 сомони/мес за каждую, вкладка «По проверкам»).</p>
 </div>
@@ -497,6 +502,7 @@
     <p><b>Подписка:</b> взнос 60 000 с. + 3 × 500 с./мес = взнос 60 000 с. + <b>1 500 сомони/мес (≈$163)</b></p>
     <p style="margin-top:8px">Нужны все 8 проверок в реальном времени — дешевле взять пакетом (вкладка «Пакеты»), чем поштучно.</p>
   </div>
+  <div class="table-scroll">
   <table class="report-table calc-table">
     <tr><th></th><th>Проверка</th><th>Разово</th><th>Подписка, /мес</th></tr>
     <tr><td colspan="4" style="background:var(--paper);font-weight:600">В реальном времени</td></tr>
@@ -517,11 +523,13 @@
     <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e1"></td><td><label for="chk-e1">Сотрудник ест или пьёт в зале</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e2"></td><td><label for="chk-e2">Блюдо стоит на раздаче кухни</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
   </table>
+  </div>
 </div>
 
 <div class="tab-panel" id="tab-packs">
   <p class="h2-note">Отметьте пакет — входящие в него проверки отметятся сами и
   их цена больше не суммируется отдельно. Пакеты взаимоисключающие.</p>
+  <div class="table-scroll">
   <table class="report-table calc-table">
     <tr><th></th><th>Пакет</th><th>Что входит</th><th>Разово</th><th>Подписка, /мес</th></tr>
     <tr class="pack-row"><td><input type="checkbox" id="chk-pack8" data-onetime="42000" data-monthly="3500"></td><td><label for="chk-pack8">8 проверок в реальном времени</label></td><td>Весь список «в реальном времени» из вкладки «По проверкам»</td>
@@ -531,9 +539,11 @@
         <td class="price-cell">72 500 с. <small>(≈$7 880, вместо 85 600 с. поштучно)</small></td>
         <td class="price-cell">6 000 с. <small>(≈$652, вместо 7 000 с./мес поштучно)</small></td></tr>
   </table>
+  </div>
 </div>
 
 <div class="tab-panel" id="tab-modules">
+  <div class="table-scroll">
   <table class="report-table calc-table">
     <tr><th></th><th>Модуль</th><th>Что входит</th><th>Разово</th><th>Подписка, /мес</th></tr>
     <tr><td><input type="checkbox" class="calc-module" data-onetime="10600" data-monthly="800" id="chk-m1"></td><td><label for="chk-m1">Продвинутая аналитика</label></td>
@@ -546,11 +556,14 @@
         <td>Обновления и поддержка (для подписки уже включено во взнос и месячную цену)</td>
         <td class="price-cell">—</td><td class="price-cell">1 400 с./мес <small>(≈$152)</small></td></tr>
   </table>
+  </div>
+  <div class="table-scroll">
   <table class="report-table calc-table" style="margin-top:16px">
     <tr><th></th><th>Камеры сверх включённых в платформу</th><th>Цена за 1 камеру</th></tr>
     <tr><td><input type="number" id="camQty" min="0" max="20" step="1" value="0"></td><td><label for="camQty">Количество дополнительных камер</label></td>
         <td class="price-cell">4 000 с. <small>(≈$430)</small> разово, за каждую</td></tr>
   </table>
+  </div>
   <p class="h2-note" style="margin-top:10px">Платформа включает до 4 камер/залов (см. вкладку «Платформа»).
   Каждая камера сверх этого — разовая доплата, без ежемесячной наценки, для обеих схем оплаты.</p>
 </div>
