@@ -169,14 +169,17 @@
     border: 2px solid var(--ember); border-radius: 12px; padding: 20px 24px;
     margin: 22px 0 26px; text-align: center;
   }
+  .calc-summary-inner { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px 28px; text-align: center; }
   .calc-label { font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
     color: var(--ember); font-weight: 600; }
-  .calc-num { font-family: Georgia, serif; font-size: 24px; margin: 4px 0 0;
+  .calc-num { font-family: Georgia, serif; font-size: 22px; margin: 4px 0 0;
     font-variant-numeric: tabular-nums; }
   .calc-num small { font-size: 14px; font-weight: 400; color: var(--ink-soft); }
-  .calc-num--sub { font-size: 17px; color: var(--ink-soft); margin-top: 2px; }
-  .calc-note { font-size: 12.5px; color: var(--ink-soft); margin: 14px 0 0;
-    max-width: 46ch; margin-left: auto; margin-right: auto; }
+  .calc-num--sub { font-size: 16px; color: var(--ink-soft); margin-top: 2px; }
+  .calc-maint { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+  .calc-note { font-size: 12.5px; color: var(--ink-soft); margin: 16px 0 0;
+    max-width: 60ch; margin-left: auto; margin-right: auto; }
   .calc-reset { font-size: 12.5px; color: var(--ember); background: none; border: none;
     padding: 0; cursor: pointer; text-decoration: underline; font-family: inherit; }
 
@@ -410,12 +413,23 @@
 </div>
 
 <div class="calc-summary" id="calcSummary">
-  <span class="calc-label">Ваша подписка</span>
-  <div class="calc-num">60 000 сомони <small>(≈$6 520)</small> взнос</div>
-  <div class="calc-num calc-num--sub">+ <span id="calcMonthlyVal">—</span>/мес</div>
-  <p class="calc-note">Отметьте нужные проверки и пакет во вкладках ниже — месячная сумма
-  пересчитается сама. Взнос фиксирован, 500 сомони/мес за каждый порог (пакет — дешевле
-  поштучного). &nbsp;<button type="button" class="calc-reset" id="calcReset">Сбросить выбор</button></p>
+  <div class="calc-summary-inner">
+    <div>
+      <span class="calc-label">Разовая покупка — итого</span>
+      <div class="calc-num" id="calcOnetimeVal">—</div>
+      <div class="calc-maint" id="calcMaintWrap" hidden>+ обслуживание (опционально): <span id="calcMaintVal"></span>/мес</div>
+    </div>
+    <div>
+      <span class="calc-label">Ваша подписка</span>
+      <div class="calc-num">60 000 сомони <small>(≈$6 520)</small> взнос</div>
+      <div class="calc-num calc-num--sub">+ <span id="calcMonthlyVal">—</span>/мес</div>
+    </div>
+  </div>
+  <p class="calc-note">Отметьте нужные проверки, пакет и камеры в таблицах ниже — обе суммы
+  пересчитаются сами. Разово: платформа (74 100) уже включает 1 проверку — 80 000 за платформу
+  + 1 проверку в реальном времени, дальше каждая следующая — отдельно. Подписка: взнос
+  фиксирован, 500 сомони/мес за каждый порог (пакет — дешевле поштучного).
+  &nbsp;<button type="button" class="calc-reset" id="calcReset">Сбросить выбор</button></p>
 </div>
 
 <div class="tabs" role="tablist">
@@ -528,14 +542,14 @@
     <tr><td><input type="checkbox" class="calc-module" data-onetime="5900" data-monthly="500" id="chk-m2"></td><td><label for="chk-m2">Расписание проверок</label></td>
         <td>Включение/выключение и рабочие часы для каждой проверки отдельно</td>
         <td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
-    <tr><td></td><td>Обслуживание при разовой покупке</td>
+    <tr><td><input type="checkbox" class="calc-module" data-onetime="0" data-monthly="1400" data-maintenance id="chk-m4"></td><td><label for="chk-m4">Обслуживание при разовой покупке</label></td>
         <td>Обновления и поддержка (для подписки уже включено во взнос и месячную цену)</td>
         <td class="price-cell">—</td><td class="price-cell">1 400 с./мес <small>(≈$152)</small></td></tr>
   </table>
-  <table class="report-table">
-    <tr><th>Камеры сверх включённых в платформу</th><th>Цена за 1 камеру</th></tr>
-    <tr><td>Каждая дополнительная камера/зал</td>
-        <td class="price-cell">4 000 с. <small>(≈$430)</small> разово</td></tr>
+  <table class="report-table calc-table" style="margin-top:16px">
+    <tr><th></th><th>Камеры сверх включённых в платформу</th><th>Цена за 1 камеру</th></tr>
+    <tr><td><input type="number" id="camQty" min="0" max="20" step="1" value="0"></td><td><label for="camQty">Количество дополнительных камер</label></td>
+        <td class="price-cell">4 000 с. <small>(≈$430)</small> разово, за каждую</td></tr>
   </table>
   <p class="h2-note" style="margin-top:10px">Платформа включает до 4 камер/залов (см. вкладку «Платформа»).
   Каждая камера сверх этого — разовая доплата, без ежемесячной наценки, для обеих схем оплаты.</p>
@@ -589,12 +603,19 @@
 <script>
 (function () {
   'use strict';
-  // Live pricing calculator for the subscription monthly total only (the
-  // one-time price is a static headline card, not computed here -- see the
-  // render() comment below for why). Pure arithmetic in the
-  // browser -- no network calls, no data collection. Rounding matches the
-  // convention used for every other static price on this page: nearest $1.
+  // Live pricing calculator. Pure arithmetic in the browser -- no network
+  // calls, no data collection. Rounding matches the convention used for
+  // every other static price on this page: one-time to the nearest $10,
+  // monthly to the nearest $1.
   var RATE = 9.2;
+  // Real platform price, NOT the rounded "от 80 000" headline. Starting at
+  // the real platform price and just adding each selected check's full
+  // price already lands on 80 000 for platform + 1 realtime check (74 100
+  // + 5 900) with no double-counting -- no separate "first check is free"
+  // logic needed. Using the rounded 80 000 as the base instead would have
+  // silently double-charged for whichever check the buyer picks first.
+  var PLATFORM_ONETIME = 74100;
+  var CAMERA_FEE_ONETIME = 4000;
 
   var pack8 = document.getElementById('chk-pack8');
   var packFull = document.getElementById('chk-packfull');
@@ -603,8 +624,12 @@
   var checkBoxes = Array.prototype.slice.call(document.querySelectorAll('.calc-check'));
   var moduleBoxes = Array.prototype.slice.call(document.querySelectorAll('.calc-module'));
   var realtimeBoxes = checkBoxes.filter(function (cb) { return cb.hasAttribute('data-realtime'); });
+  var camQty = document.getElementById('camQty');
 
+  var onetimeEl = document.getElementById('calcOnetimeVal');
   var monthlyEl = document.getElementById('calcMonthlyVal');
+  var maintWrap = document.getElementById('calcMaintWrap');
+  var maintEl = document.getElementById('calcMaintVal');
   var resetBtn = document.getElementById('calcReset');
 
   // Which check ids the active package auto-checked last render -- so
@@ -644,36 +669,59 @@
   function render() {
     syncPackageCoverage();
 
-    // Subscription monthly total only -- the calculator no longer tracks a
-    // one-time total (that's the static headline card above it now;
-    // a second, differently-computed "разовая покупка" number here read as
-    // a mismatch rather than a live breakdown). The 60 000 signup fee
-    // (static text in the markup) already covers the platform itself, so
-    // this is purely the sum of chosen checks/packages/modules at their
-    // subscription rate (flat 500/mo per check). "Обслуживание при разовой
-    // покупке" is one-time-only and has no subscription price, so it's
-    // plain text in its table row now, not a checkbox feeding this total.
+    // One-time total: real platform price + extra cameras + selected
+    // checks/packages/modules -- see the PLATFORM_ONETIME comment above for
+    // why no separate "first check free" adjustment is needed here.
+    var onetime = PLATFORM_ONETIME + (Number(camQty && camQty.value || 0) * CAMERA_FEE_ONETIME);
+    // Subscription monthly total: NOT platform-based -- the 60 000 signup
+    // fee (static text in the markup) already covers the platform itself,
+    // so this is purely the sum of chosen checks/packages/modules at their
+    // subscription rate (flat 500/mo per check).
     var monthly = 0;
+    var maintenanceMonthly = 0;
 
     // Package price replaces the sum of the items it covers -- covered
     // checkboxes are skipped below (disabled = true), so this is the only
     // place their cost enters the total. Packages are mutually exclusive
     // (enforced in the change handlers), so at most one of these runs.
     if (packFull.checked) {
+      onetime += Number(packFull.dataset.onetime);
       monthly += Number(packFull.dataset.monthly);
     } else if (pack8.checked) {
+      onetime += Number(pack8.dataset.onetime);
       monthly += Number(pack8.dataset.monthly);
     }
 
     checkBoxes.forEach(function (cb) {
-      if (!cb.disabled && cb.checked) monthly += Number(cb.dataset.monthly);
+      if (!cb.disabled && cb.checked) {
+        onetime += Number(cb.dataset.onetime);
+        monthly += Number(cb.dataset.monthly);
+      }
     });
 
     moduleBoxes.forEach(function (cb) {
-      if (cb.checked) monthly += Number(cb.dataset.monthly);
+      if (!cb.checked) return;
+      onetime += Number(cb.dataset.onetime);
+      if (cb.hasAttribute('data-maintenance')) {
+        // Relevant only to the one-time-purchase plan -- a subscription
+        // already includes support in its signup fee + monthly rate, so
+        // this must NOT be added into the subscription monthly total or it
+        // would double-count support for subscribers. Shown as its own
+        // line under the one-time total instead.
+        maintenanceMonthly += Number(cb.dataset.monthly);
+      } else {
+        monthly += Number(cb.dataset.monthly);
+      }
     });
 
+    onetimeEl.innerHTML = money(onetime, 10);
     monthlyEl.innerHTML = money(monthly, 1);
+    if (maintenanceMonthly > 0) {
+      maintWrap.hidden = false;
+      maintEl.innerHTML = money(maintenanceMonthly, 1) + '/мес';
+    } else {
+      maintWrap.hidden = true;
+    }
   }
 
   function onPack8Change() {
@@ -689,6 +737,7 @@
   checkBoxes.concat(moduleBoxes).forEach(function (cb) {
     cb.addEventListener('change', render);
   });
+  if (camQty) camQty.addEventListener('input', render);
 
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
@@ -696,6 +745,7 @@
         cb.checked = false;
         cb.disabled = false;
       });
+      if (camQty) camQty.value = 0;
       prevCovered = {};
       render();
     });
