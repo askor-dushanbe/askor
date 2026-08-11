@@ -399,8 +399,8 @@
 <div class="price-cards">
   <div class="price-card">
     <span class="t">Разовая покупка</span>
-    <div class="price-big">120 000 сомони <small>(≈$13 040)</small></div>
-    <span class="d">Бессрочная лицензия, весь комплект — платформа + все 14 проверок. Работает даже без продления обслуживания. Меньше проверок — дешевле, см. вкладку «По проверкам».</span>
+    <div class="price-big">от 80 000 сомони <small>(≈$8 700)</small></div>
+    <span class="d">Бессрочная лицензия — платформа + 1 проверка на выбор. Каждая следующая проверка — отдельно (см. вкладку «По проверкам»), либо пакетом дешевле («Пакеты»). Работает даже без продления обслуживания.</span>
   </div>
   <div class="price-card">
     <span class="t">Подписка</span>
@@ -437,7 +437,7 @@
         <li>Платформа (до 4 камер)</li>
         <li>4 проверки в реальном времени: меню, уборка стола, телефон, персонал в зале</li>
       </ul>
-      <div class="price-big">71 100 сомони <small>(≈$7 730)</small></div>
+      <div class="price-big">97 700 сомони <small>(≈$10 620)</small></div>
       <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 2 000 сомони/мес (≈$217)</span>
     </div>
     <div class="price-card plan-card">
@@ -446,7 +446,7 @@
         <li>Платформа (до 4 камер)</li>
         <li>Пакет из 8 проверок в реальном времени</li>
       </ul>
-      <div class="price-big">89 500 сомони <small>(≈$9 730)</small></div>
+      <div class="price-big">116 100 сомони <small>(≈$12 620)</small></div>
       <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 3 500 сомони/мес (≈$380)</span>
     </div>
     <div class="price-card plan-card">
@@ -456,7 +456,7 @@
         <li>Полный пакет — все 14 проверок</li>
         <li>Продвинутая аналитика (Excel, недельные отчёты)</li>
       </ul>
-      <div class="price-big">130 600 сомони <small>(≈$14 200)</small></div>
+      <div class="price-big">157 200 сомони <small>(≈$17 090)</small></div>
       <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 6 800 сомони/мес (≈$739)</span>
     </div>
   </div>
@@ -466,7 +466,7 @@
   <p class="h2-note">Не проверка, а основа: подключение камер, панель управления, Telegram-алерты, ежедневный отчёт.</p>
   <table class="report-table">
     <tr><th>Платформа (до 4 камер/залов)</th><th>Разово</th><th>В месяц</th></tr>
-    <tr><td>Установка + бессрочная база</td><td>47 500 сомони <small>(≈$5 160)</small></td><td>—</td></tr>
+    <tr><td>Установка + бессрочная база</td><td>74 100 сомони <small>(≈$8 050)</small></td><td>—</td></tr>
     <tr><td>Установка + база (подписка)</td><td>60 000 сомони <small>взнос (≈$6 520)</small></td><td>— <small>(включено во взнос)</small></td></tr>
   </table>
   <p class="h2-note" style="margin-top:10px">При подписке взнос заменяет и установку, и ежемесячную плату
@@ -479,7 +479,7 @@
   Подписка = <b>взнос 60 000</b> + <b>500 сомони/мес</b> за каждую выбранную проверку.</p>
   <div class="alert-sample">
     <p class="from">Пример расчёта · 3 проверки в реальном времени</p>
-    <p><b>Разово:</b> платформа 47 500 с. + 3 × 5 900 с. = <b>65 200 сомони (≈$7 090)</b></p>
+    <p><b>Разово:</b> платформа 74 100 с. + 3 × 5 900 с. = <b>91 800 сомони (≈$9 980)</b></p>
     <p><b>Подписка:</b> взнос 60 000 с. + 3 × 500 с./мес = взнос 60 000 с. + <b>1 500 сомони/мес (≈$163)</b></p>
     <p style="margin-top:8px">Нужны все 8 проверок в реальном времени — дешевле взять пакетом (вкладка «Пакеты»), чем поштучно.</p>
   </div>
@@ -590,8 +590,8 @@
 (function () {
   'use strict';
   // Live pricing calculator for the subscription monthly total only (the
-  // one-time price is the fixed 120 000 headline card, not computed here
-  // -- see the render() comment below for why). Pure arithmetic in the
+  // one-time price is a static headline card, not computed here -- see the
+  // render() comment below for why). Pure arithmetic in the
   // browser -- no network calls, no data collection. Rounding matches the
   // convention used for every other static price on this page: nearest $1.
   var RATE = 9.2;
@@ -645,7 +645,7 @@
     syncPackageCoverage();
 
     // Subscription monthly total only -- the calculator no longer tracks a
-    // one-time total (that's the fixed 120 000 headline card above it now;
+    // one-time total (that's the static headline card above it now;
     // a second, differently-computed "разовая покупка" number here read as
     // a mismatch rather than a live breakdown). The 60 000 signup fee
     // (static text in the markup) already covers the platform itself, so
