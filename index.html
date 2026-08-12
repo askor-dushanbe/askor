@@ -223,7 +223,7 @@
   замечает нарушения стандартов сервиса и мгновенно присылает менеджеру фото
   в Telegram. Ниже — полный список автоматических проверок.</p>
   <div class="tally">
-    <div><b>14</b><span>проверок</span></div>
+    <div><b>13</b><span>проверок</span></div>
     <div><b>24/7</b><span>без выходных</span></div>
     <div><b>≈1 мин</b><span>от нарушения до алерта</span></div>
   </div>
@@ -261,15 +261,13 @@
     <span class="how">По стандарту у стола находятся не дольше 3–5 минут за раз.</span></div>
   <div class="check"><span class="name">В зале нет ни одного сотрудника</span><span class="lim">3 мин</span>
     <span class="how">Проверка сразу по всем камерам зала: минимум один сотрудник всегда на месте.</span></div>
+  <div class="check"><span class="name">Касса без присмотра</span><span class="lim">1 мин</span>
+    <span class="how">В рабочие часы зона кассы не должна пустовать дольше минуты.</span></div>
 </div>
 
 <h2>Включаются после разметки зон на камерах</h2>
-<p class="h2-note">Код готов — осталось обвести кассу и вход на кадрах камер (10 минут работы).</p>
+<p class="h2-note">Код готов — осталось обвести запретные зоны и экраны/плазмы на кадрах камер (10 минут работы).</p>
 <div class="checks">
-  <div class="check"><span class="name">Гостя не встретили у входа</span><span class="lim">60 сек</span>
-    <span class="how">Гость зашёл — сотрудник должен подойти сразу, а не дать ему самому искать себе стол.</span></div>
-  <div class="check"><span class="name">Касса без присмотра</span><span class="lim">1 мин</span>
-    <span class="how">В рабочие часы зона кассы не должна пустовать дольше минуты.</span></div>
   <div class="check"><span class="name">Сотрудник в запретной зоне</span><span class="lim">сразу</span>
     <span class="how">Зоны, куда персоналу в форме входить нельзя (склад, служебные помещения) — настраивается под заведение.</span></div>
   <div class="check"><span class="name">Плазмы выключены к открытию</span><span class="lim">до открытия</span>
@@ -473,11 +471,11 @@
       <span class="t">Про</span>
       <ul class="incl">
         <li>Платформа (до 4 камер)</li>
-        <li>Полный пакет — все 14 проверок</li>
+        <li>Полный пакет — все 13 проверок</li>
         <li>Продвинутая аналитика (Excel, недельные отчёты)</li>
       </ul>
-      <div class="price-big">157 200 сомони <small>(≈$17 090)</small></div>
-      <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 6 800 сомони/мес (≈$739)</span>
+      <div class="price-big">151 100 сомони <small>(≈$16 420)</small></div>
+      <span class="d">Подписка: 60 000 сомони взнос (≈$6 520) + 6 400 сомони/мес (≈$696)</span>
     </div>
   </div>
 </div>
@@ -518,10 +516,9 @@
     <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt7"></td><td><label for="chk-rt7">Официант «завис» у стола гостей</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt8"></td><td><label for="chk-rt8">В зале нет ни одного сотрудника</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td colspan="4" style="background:var(--paper);font-weight:600">С разметкой зон</td></tr>
-    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z1"></td><td><label for="chk-z1">Гостя не встретили у входа</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z2"></td><td><label for="chk-z2">Касса без присмотра</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z3"></td><td><label for="chk-z3">Сотрудник в запретной зоне</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
-    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z4"></td><td><label for="chk-z4">Утренняя проверка зала</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z4"></td><td><label for="chk-z4">Плазмы выключены к открытию</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td colspan="4" style="background:var(--paper);font-weight:600">Экспериментальные (после проверки точности на ваших камерах)</td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e1"></td><td><label for="chk-e1">Сотрудник ест или пьёт в зале</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e2"></td><td><label for="chk-e2">Блюдо стоит на раздаче кухни</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
@@ -538,9 +535,9 @@
     <tr class="pack-row"><td><input type="checkbox" id="chk-pack8" data-onetime="42000" data-monthly="3500"></td><td><label for="chk-pack8">8 проверок в реальном времени</label></td><td>Весь список «в реальном времени» из вкладки «По проверкам»</td>
         <td class="price-cell">42 000 с. <small>(≈$4 570, вместо 47 200 с. поштучно)</small></td>
         <td class="price-cell">3 500 с. <small>(≈$380, вместо 4 000 с./мес поштучно)</small></td></tr>
-    <tr class="pack-row"><td><input type="checkbox" id="chk-packfull" data-onetime="72500" data-monthly="6000"></td><td><label for="chk-packfull">Полный пакет — все 14 проверок</label></td><td>Все проверки из вкладки «По проверкам»</td>
-        <td class="price-cell">72 500 с. <small>(≈$7 880, вместо 85 600 с. поштучно)</small></td>
-        <td class="price-cell">6 000 с. <small>(≈$652, вместо 7 000 с./мес поштучно)</small></td></tr>
+    <tr class="pack-row"><td><input type="checkbox" id="chk-packfull" data-onetime="66400" data-monthly="5600"></td><td><label for="chk-packfull">Полный пакет — все 13 проверок</label></td><td>Все проверки из вкладки «По проверкам»</td>
+        <td class="price-cell">66 400 с. <small>(≈$7 220, вместо 78 400 с. поштучно)</small></td>
+        <td class="price-cell">5 600 с. <small>(≈$609, вместо 6 500 с./мес поштучно)</small></td></tr>
   </table>
   </div>
 </div>
