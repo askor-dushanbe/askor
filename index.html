@@ -407,7 +407,8 @@
   <div class="price-card">
     <span class="t">Разовая покупка</span>
     <div class="price-big">от 80 000 сомони <small>(≈$8 700)</small></div>
-    <span class="d">Бессрочная лицензия — платформа + 1 проверка на выбор. Каждая следующая проверка — отдельно (см. вкладку «По проверкам»), либо пакетом дешевле («Пакеты»). Работает даже без продления обслуживания.</span>
+    <span class="d">Из них 40 000 (≈$4 350) — взнос при заказе, остаток — после установки и запуска (50/50).
+    Бессрочная лицензия — платформа + 1 проверка на выбор. Каждая следующая проверка — отдельно (см. вкладку «По проверкам»), либо пакетом дешевле («Пакеты»). Работает даже без продления обслуживания.</span>
   </div>
   <div class="price-card">
     <span class="t">Подписка</span>
@@ -421,6 +422,7 @@
     <div>
       <span class="calc-label">Разовая покупка — итого</span>
       <div class="calc-num" id="calcOnetimeVal">—</div>
+      <div class="calc-maint">из них <span id="calcDepositVal">—</span> — взнос при заказе (50/50)</div>
       <div class="calc-maint" id="calcMaintWrap" hidden>+ обслуживание (опционально): <span id="calcMaintVal"></span>/мес</div>
     </div>
     <div>
@@ -646,6 +648,7 @@
   var camQty = document.getElementById('camQty');
 
   var onetimeEl = document.getElementById('calcOnetimeVal');
+  var depositEl = document.getElementById('calcDepositVal');
   var monthlyEl = document.getElementById('calcMonthlyVal');
   var maintWrap = document.getElementById('calcMaintWrap');
   var maintEl = document.getElementById('calcMaintVal');
@@ -734,6 +737,7 @@
     });
 
     onetimeEl.innerHTML = money(onetime, 10);
+    depositEl.innerHTML = money(onetime / 2, 10);
     monthlyEl.innerHTML = money(monthly, 1);
     if (maintenanceMonthly > 0) {
       maintWrap.hidden = false;
