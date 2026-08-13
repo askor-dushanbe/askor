@@ -273,8 +273,8 @@
 <h2>Включаются после разметки зон на камерах</h2>
 <p class="h2-note">Код готов — осталось обвести запретные зоны и экраны/плазмы на кадрах камер (10 минут работы).</p>
 <div class="checks">
-  <div class="check"><span class="name">Сотрудник в запретной зоне</span><span class="lim">сразу</span>
-    <span class="how">Зоны, куда персоналу в форме входить нельзя (склад, служебные помещения) — настраивается под заведение.</span></div>
+  <div class="check"><span class="name">Кто-то в запретной зоне</span><span class="lim">сразу</span>
+    <span class="how">Помещения, куда вообще никому не нужно заходить — серверная, сейф, склад алкоголя. Сработает на любого, не только на персонал. Список зон — под ваше заведение.</span></div>
   <div class="check"><span class="name">Плазмы выключены к открытию</span><span class="lim">до открытия</span>
     <span class="how">Проверка по яркости экрана в зоне: если плазма или монитор остался выключен к открытию — алерт админу с фото.</span></div>
 </div>
@@ -548,7 +548,7 @@
     <tr><td><input type="checkbox" class="calc-check" data-realtime data-onetime="5900" data-monthly="500" id="chk-rt8"></td><td><label for="chk-rt8">В зале нет ни одного сотрудника</label></td><td class="price-cell">5 900 с. <small>(≈$640)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td colspan="4" style="background:var(--paper);font-weight:600">С разметкой зон</td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z2"></td><td><label for="chk-z2">Касса без присмотра</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
-    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z3"></td><td><label for="chk-z3">Сотрудник в запретной зоне</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
+    <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z3"></td><td><label for="chk-z3">Кто-то в запретной зоне</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="7200" data-monthly="500" id="chk-z4"></td><td><label for="chk-z4">Плазмы выключены к открытию</label></td><td class="price-cell">7 200 с. <small>(≈$780)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
     <tr><td colspan="4" style="background:var(--paper);font-weight:600">Экспериментальные (после проверки точности на ваших камерах)</td></tr>
     <tr><td><input type="checkbox" class="calc-check" data-onetime="4800" data-monthly="500" id="chk-e1"></td><td><label for="chk-e1">Сотрудник ест или пьёт в зале</label></td><td class="price-cell">4 800 с. <small>(≈$520)</small></td><td class="price-cell">500 с. <small>(≈$54)</small></td></tr>
